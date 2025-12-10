@@ -17,6 +17,8 @@ echo "INFO: Requesting SSL certificates!"
 # we're using webroot mode to get a certificate for this fs subdomain only
 ./acme.sh --set-default-ca --server letsencrypt --issue \
     -d 'telemetry.formulaslug.com' \
+    -d 'graf.telemetry.formulaslug.com' \
+    -d 'clickhouse.telemetry.formulaslug.com' \
     -w /website-static
 
 
@@ -30,6 +32,8 @@ echo "INFO: Requesting SSL certificates!"
 
 ./acme.sh --install-cert \
     -d 'telemetry.formulaslug.com' \
+    -d 'graf.telemetry.formulaslug.com' \
+    -d 'clickhouse.telemetry.formulaslug.com' \
     --key-file /acme.sh-certs/key-telem.pem \
     --fullchain-file /acme.sh-certs/fullchain-telem.pem \
 

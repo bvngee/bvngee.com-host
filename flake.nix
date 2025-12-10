@@ -11,43 +11,61 @@
     # Note:
     # the nix2container output contains dockerTools-like nix functions, and
     # the nix2container-bin output contains the go binary used in those functions
-    nix2container.url = "github:nlewo/nix2container";
+    # nix2container.url = "github:nlewo/nix2container";
+    nix2container.url = "github:bvngee/nix2container/add-created-now-option";
     nix2container.inputs.nixpkgs.follows = "nixpkgs";
 
     acme-sh.url = "github:acmesh-official/acme.sh";
     acme-sh.flake = false;
   };
 
-  outputs = { nixpkgs, ... }@inputs:
+  outputs = { self, nixpkgs, ... }@inputs:
     let
       supportedSystems = [ "x86_64-linux" "x86_64-darwin" "aarch64-linux" "aarch64-darwin" ];
       forAllSystems = fn:
-        nixpkgs.lib.genAttrs supportedSystems (system: fn nixpkgs.legacyPackages.${system});
+        nixpkgs.lib.genAttrs supportedSystems (system: fn nixpkgs.legacyPackages.${system} system);
     in
     {
-      packages = forAllSystems (pkgs:
-        let
-          nix2container = inputs.nix2container.packages.${pkgs.system}.nix2container;
-        in
-        rec {
-          github-readme-stats = pkgs.callPackage ./pkgs/github-readme-stats { };
 
-          containers = {
-            github-readme-stats = pkgs.callPackage ./containers/github-readme-stats/default.nix {
-              inherit nix2container github-readme-stats;
-            };
-            webhook = pkgs.callPackage ./containers/webhook/default.nix { inherit nix2container; };
-            nginx-proxy = pkgs.callPackage ./containers/nginx-proxy/default.nix { inherit nix2container; };
-            acme-sh = pkgs.callPackage ./containers/acme.sh/default.nix {
-              inherit nix2container;
-              inherit (inputs) acme-sh;
-            };
-          };
-        });
-      devShells = forAllSystems (pkgs: {
+      packages = forAllSystems
+        (pkgs: system:
+          {
+            github-readme-stats = pkgs.callPackage ./pkgs/github-readme-stats { };
+            containers =
+              let
+                nix2container =
+                  inputs.nix2container.packages.${system}.nix2container;
+              in
+              forAllSystems (hostPkgs: hostSystem:
+                {
+                  github-readme-stats = hostPkgs.callPackage ./containers/github-readme-stats/default.nix {
+                    arch = hostPkgs.go.GOARCH;
+                    inherit nix2container;
+
+                    inherit (self) github-readme-stats;
+                  };
+                  webhook = hostPkgs.callPackage ./containers/webhook/default.nix {
+                    arch = hostPkgs.go.GOARCH;
+                    inherit nix2container;
+                  };
+                  nginx-proxy = hostPkgs.callPackage ./containers/nginx-proxy/default.nix {
+                    arch = hostPkgs.go.GOARCH;
+                    inherit nix2container;
+                  };
+                  acme-sh = hostPkgs.callPackage ./containers/acme.sh/default.nix {
+                    arch = hostPkgs.go.GOARCH;
+                    inherit nix2container;
+
+                    inherit (inputs) acme-sh;
+                  };
+                }
+              );
+          }
+        );
+      devShells = forAllSystems (pkgs: system: {
         default = pkgs.mkShell {
           name = "bvngee.com-host";
-          packages = with inputs.nix2container.packages.${pkgs.system}; [
+          packages = with inputs.nix2container.packages.${system}; [
             nix2container-bin # go program that generates json files in the defined format
             skopeo-nix2container # patched Skopeo that can work withs those json files
           ];

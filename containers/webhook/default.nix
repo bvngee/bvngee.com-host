@@ -1,7 +1,8 @@
 {
-  lib,
   nix2container,
+  arch,
   dockerTools,
+  lib,
   buildEnv,
   runCommand,
   webhook,
@@ -18,7 +19,9 @@
   ...
 }: nix2container.buildImage {
   name = "bvngee/webhook";
+  inherit arch;
   tag = "latest";
+  created = "now";
   maxLayers = 125;
   copyToRoot = [
     dockerTools.caCertificates

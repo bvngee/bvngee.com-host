@@ -1,8 +1,9 @@
 {
-  lib,
-  callPackage,
   nix2container,
+  arch,
+  lib,
   dockerTools,
+  callPackage,
   buildEnv,
 
   # note: this could use nodejs slim but then but then it wouldn't
@@ -14,7 +15,9 @@
   ...
 }: nix2container.buildImage {
   name = "bvngee/github-readme-stats";
+  inherit arch;
   tag = "latest";
+  created = "now";
   maxLayers = 125;
   copyToRoot = [
     dockerTools.caCertificates

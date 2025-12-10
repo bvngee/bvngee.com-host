@@ -1,5 +1,6 @@
 {
   nix2container,
+  arch,
   dockerTools,
   buildEnv,
   runCommand,
@@ -32,7 +33,9 @@ let
 in
 nix2container.buildImage {
   name = "bvngee/nginx-proxy";
+  inherit arch;
   tag = "latest";
+  created = "now";
   maxLayers = 125;
   copyToRoot = [
     deps
