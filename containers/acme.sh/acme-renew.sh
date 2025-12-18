@@ -19,6 +19,7 @@ echo "INFO: Requesting SSL certificates!"
     -d 'telemetry.formulaslug.com' \
     -d 'graf.telemetry.formulaslug.com' \
     -d 'clickhouse.telemetry.formulaslug.com' \
+    -d 'data.telemetry.formulaslug.com' \
     -w /website-static
 
 
@@ -34,6 +35,7 @@ echo "INFO: Requesting SSL certificates!"
     -d 'telemetry.formulaslug.com' \
     -d 'graf.telemetry.formulaslug.com' \
     -d 'clickhouse.telemetry.formulaslug.com' \
+    -d 'data.telemetry.formulaslug.com' \
     --key-file /acme.sh-certs/key-telem.pem \
     --fullchain-file /acme.sh-certs/fullchain-telem.pem \
 
