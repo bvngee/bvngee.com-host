@@ -52,7 +52,7 @@
                     arch = hostPkgs.go.GOARCH;
                     inherit nix2container;
                   };
-                  acme-sh = hostPkgs.callPackage ./containers/acme.sh/default.nix {
+                  acme-sh = hostPkgs.callPackage ./containers/acme-sh/default.nix {
                     arch = hostPkgs.go.GOARCH;
                     inherit nix2container;
 

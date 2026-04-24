@@ -81,7 +81,7 @@ services:
 
   # Obtains SSL certificates for all used subdomains using DNS-01 challenges 
   acme.sh:
-    image: registry.bvngee.com/bvngee/acme.sh:latest
+    image: registry.bvngee.com/bvngee/acme-sh:latest
     restart: always
     volumes:
       - acme.sh-certs:/acme.sh-certs
